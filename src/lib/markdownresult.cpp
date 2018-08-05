@@ -11,10 +11,10 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-class Cantor::MdResultPrivate
+class Cantor::MarkdownResultPrivate
 {
   public:
-    MdResultPrivate()
+    MarkdownResultPrivate()
     {
         hasUrl = false;
     }
@@ -24,18 +24,18 @@ class Cantor::MdResultPrivate
     QString plain;
 };
 
-MdResult::MdResult(const QString& code, const QString& plain) : d(new LatexResultPrivate)
+MarkdownResult::MarkdownResult(const QString& code, const QString& plain) : d(new LatexResultPrivate)
 {
     d->code=code;
     d->plain=plain;
 }
 
-MdResult::~MdResult()
+MarkdownResult::~MarkdownResult()
 {
     delete d;
 }
 
-QString MdResult::toHtml()
+QString MarkdownResult::toHtml()
 {
     std::string cstr = string((const char*)((d->data).toLocal8Bit()));
     std::stringbuf buf;
@@ -50,7 +50,7 @@ QString MdResult::toHtml()
 }
 
 // same in result.cpp
-QString MdResult::toLatex()
+QString MarkdownResult::toLatex()
 {
     QString html=toHtml();
     //replace linebreaks
@@ -60,12 +60,12 @@ QString MdResult::toLatex()
     return QString::fromLatin1("\\begin{verbatim} %1 \\end{verbatim}").arg(html);
 }
 
-QVariant MdResult::data()
+QVariant MarkdownResult::data()
 {
     return QVariant(d->code);
 }
 
-QDomElement MdResult::toXml(QDomDocument& doc)
+QDomElement MarkdownResult::toXml(QDomDocument& doc)
 {
     qDebug()<<"saving textresult "<<toHtml();
     QDomElement e=doc.createElement(QLatin1String("Result"));
@@ -81,7 +81,7 @@ QDomElement MdResult::toXml(QDomDocument& doc)
 }
 
 // not implemented in LatexResult.cpp
-void MdResult::saveAdditionalData(KZip* archive)
+void MarkdownResult::saveAdditionalData(KZip* archive)
 {
     if(d->hasUrl == true)
     {
@@ -89,7 +89,7 @@ void MdResult::saveAdditionalData(KZip* archive)
     }
 }
 
-void MdResult::save(const QString& filename)
+void MarkdownResult::save(const QString& filename)
 {
     QFile file(filename);
 

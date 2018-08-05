@@ -18,22 +18,22 @@
     Copyright (C) 2009 Alexander Rieder <alexanderrieder@gmail.com>
  */
 
-#ifndef _MDRESULT_H
-#define _MDRESULT_H
+#ifndef _MARKDOWNRESULT_H
+#define _MARKDOWNRESULT_H
 
 #include "epsresult.h"
 #include "cantor_export.h"
 
 namespace Cantor{
-class MdResultPrivate;
+class MarkdownResultPrivate;
 
-class CANTOR_EXPORT MdResult : public EpsResult
+class CANTOR_EXPORT MarkdownResult : public EpsResult
 {
   public:
     enum {Type=8};
-    MdResult( const QString& code, const QUrl& url, const QString& plain = QString());
-    MdResult( const QString& code, const QString& plain = QString());
-    ~MdResult() override;
+    MarkdownResult( const QString& code, const QUrl& url, const QString& plain = QString());
+    MarkdownResult( const QString& code, const QString& plain = QString());
+    ~MarkdownResult() override;
     
     QString toLatex() = 0;
     QVariant data() = 0;
@@ -43,9 +43,9 @@ class CANTOR_EXPORT MdResult : public EpsResult
     void save(const QString& filename);
 
   private:
-    MdResultPrivate* d;
+    MarkdownResultPrivate* d;
 };
 
 }
 
-#endif /* _MDRESULT_H */
+#endif /* _MARKDOWNRESULT_H */
