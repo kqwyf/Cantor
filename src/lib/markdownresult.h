@@ -38,12 +38,12 @@ class CANTOR_EXPORT MarkdownResult : public EpsResult
 	int type() Q_DECL_OVERRIDE;
 	QString mimeType() Q_DECL_OVERRIDE;
     
-    QString toLatex() = 0;
-    QVariant data() = 0;
+    QString toLatex() Q_DECL_OVERRIDE;
+    QVariant data() Q_DECL_OVERRIDE;
 
-    QDomElement toXml(QDomDocument& doc) = 0;
+    QDomElement toXml(QDomDocument& doc) Q_DECL_OVERRIDE;
     
-    void save(const QString& filename);
+    void save(const QString& filename) Q_DECL_OVERRIDE;
 
   private:
     MarkdownResultPrivate* d;

@@ -22,6 +22,7 @@
 #include "textresultitem.h"
 #include "lib/result.h"
 #include "lib/textresult.h"
+#include "lib/markdownresult.h"
 #include "lib/latexresult.h"
 
 #include <QTextCursor>
