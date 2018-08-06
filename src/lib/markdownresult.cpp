@@ -49,6 +49,17 @@ QString MarkdownResult::toHtml()
     return QString(QString::fromLocal8Bit(ans.c_str()));
 }
 
+// same in result.cpp
+QString MdResult::toLatex()
+{
+    QString html=toHtml();
+    //replace linebreaks
+    html.replace(QRegExp(QLatin1String("<br/>[\n]")), QLatin1String("\n"));
+    //remove all the unknown tags
+    html.remove( QRegExp( QLatin1String("<[a-zA-Z\\/][^>]*>") ) );
+    return QString::fromLatin1("\\begin{verbatim} %1 \\end{verbatim}").arg(html);
+}
+
 QVariant MarkdownResult::data()
 {
     return QVariant(d->code);
