@@ -24,7 +24,13 @@ class Cantor::MarkdownResultPrivate
     QString plain;
 };
 
-MarkdownResult::MarkdownResult(const QString& code, const QString& plain) : d(new LatexResultPrivate)
+MarkdownResult::MarkdownResult(const QString& code) : d(new MarkdownResultPrivate)
+{
+    d->code=code.trimmed();
+    d->plain=code.trimmed();
+}
+
+MarkdownResult::MarkdownResult(const QString& code, const QString& plain) : d(new MarkdownResultPrivate)
 {
     d->code=code;
     d->plain=plain;
