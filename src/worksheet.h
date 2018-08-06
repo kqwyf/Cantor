@@ -121,6 +121,7 @@ class Worksheet : public QGraphicsScene
     WorksheetEntry* insertCommandEntry(WorksheetEntry* current = nullptr);
     void insertCommandEntry(const QString& text);
     WorksheetEntry* insertTextEntry(WorksheetEntry* current = nullptr);
+    WorksheetEntry* insertMarkdownEntry(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertImageEntry(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertPageBreakEntry(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertLatexEntry(WorksheetEntry* current = nullptr);

@@ -593,6 +593,11 @@ WorksheetEntry* Worksheet::insertTextEntry(WorksheetEntry* current)
     return insertEntry(TextEntry::Type, current);
 }
 
+WorksheetEntry* Worksheet::insertMarkdownEntry(WorksheetEntry* current)
+{
+    return insertEntry(TextEntry::Type, current);
+}
+
 WorksheetEntry* Worksheet::insertCommandEntry(WorksheetEntry* current)
 {
     return insertEntry(CommandEntry::Type, current);

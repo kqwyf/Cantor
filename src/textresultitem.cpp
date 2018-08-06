@@ -78,6 +78,7 @@ ResultItem* TextResultItem::updateFromResult(Cantor::Result* result)
 {
     switch(result->type()) {
     case Cantor::TextResult::Type:
+	case Cantor::MarkdownResult::Type:
         {
             QTextCursor cursor = textCursor();
             cursor.movePosition(QTextCursor::Start);

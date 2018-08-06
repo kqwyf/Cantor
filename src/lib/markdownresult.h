@@ -34,6 +34,9 @@ class CANTOR_EXPORT MarkdownResult : public EpsResult
     MarkdownResult( const QString& code, const QUrl& url, const QString& plain = QString());
     MarkdownResult( const QString& code, const QString& plain = QString());
     ~MarkdownResult() override;
+
+	int type() Q_DECL_OVERRIDE;
+	QString mimeType() Q_DECL_OVERRIDE;
     
     QString toLatex() = 0;
     QVariant data() = 0;
