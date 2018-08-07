@@ -19,8 +19,8 @@
     Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
  */
 
-#ifndef TEXTENTRY_H
-#define TEXTENTRY_H
+#ifndef MARKDOWNENTRY_H
+#define MARKDOWNENTRY_H
 
 #include <QString>
 #include <QDomElement>
@@ -34,33 +34,14 @@
 #include "worksheetentry.h"
 #include "worksheettextitem.h"
 
-class TextEntry : public WorksheetEntry
+class MarkdownEntry : public TextEntry
 {
   Q_OBJECT
   public:
-    TextEntry(Worksheet* worksheet);
-    ~TextEntry() override;
+    MarkdownEntry(Worksheet* worksheet);
+    ~MarkdownEntry() override;
 
-    enum {Type = UserType + 1};
-    int type() const Q_DECL_OVERRIDE;
-
-    bool isEmpty() Q_DECL_OVERRIDE;
-
-    bool acceptRichText() Q_DECL_OVERRIDE;
-
-    bool focusEntry(int pos = WorksheetTextItem::TopLeft, qreal xCoord=0) Q_DECL_OVERRIDE;
-
-    // do we need/get this?
-    //bool worksheetContextMenuEvent(...);
-    //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-    void setContent(const QString& content) Q_DECL_OVERRIDE;
-    void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
-
-    QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
-    QString toPlain(const QString& commandSep, const QString& commentStartingSeq, const QString& commentEndingSeq) Q_DECL_OVERRIDE;
-
-    void interruptEvaluation() Q_DECL_OVERRIDE;
+    enum {Type = UserType + 2};
 
     void layOutForWidth(qreal w, bool force = false) Q_DECL_OVERRIDE;
 
@@ -74,18 +55,17 @@ class TextEntry : public WorksheetEntry
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
     void resolveImagesAtCursor();
     void updateEntry() Q_DECL_OVERRIDE;
-    void populateMenu(QMenu *menu, const QPointF& pos) Q_DECL_OVERRIDE;
 
   protected:
     bool wantToEvaluate() Q_DECL_OVERRIDE;
-
-  protected:
-    WorksheetTextItem* m_textItem;
 
   private:
     QTextCursor findLatexCode(QTextCursor cursor = QTextCursor()) const;
     QString showLatexCode(QTextCursor cursor);
 
+  private:
+    WorksheetTextItem* m_textItem;
+
 };
 
-#endif //TEXTENTRY_H
+#endif //MARKDOWNENTRY_H
