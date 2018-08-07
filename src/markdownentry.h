@@ -31,8 +31,8 @@
 #include <KArchive>
 
 
-#include "worksheetentry.h"
 #include "worksheettextitem.h"
+#include "textentry.h"
 
 class MarkdownEntry : public TextEntry
 {
@@ -43,29 +43,8 @@ class MarkdownEntry : public TextEntry
 
     enum {Type = UserType + 2};
 
-    void layOutForWidth(qreal w, bool force = false) Q_DECL_OVERRIDE;
-
-    int searchText(QString text, QString pattern,
-                   QTextDocument::FindFlags qt_flags);
-    WorksheetCursor search(QString pattern, unsigned flags,
-                           QTextDocument::FindFlags qt_flags,
-                           const WorksheetCursor& pos = WorksheetCursor()) Q_DECL_OVERRIDE;
-
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
-    void resolveImagesAtCursor();
-    void updateEntry() Q_DECL_OVERRIDE;
-
-  protected:
-    bool wantToEvaluate() Q_DECL_OVERRIDE;
-
-  private:
-    QTextCursor findLatexCode(QTextCursor cursor = QTextCursor()) const;
-    QString showLatexCode(QTextCursor cursor);
-
-  private:
-    WorksheetTextItem* m_textItem;
-
 };
 
 #endif //MARKDOWNENTRY_H

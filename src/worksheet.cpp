@@ -595,7 +595,7 @@ WorksheetEntry* Worksheet::insertTextEntry(WorksheetEntry* current)
 
 WorksheetEntry* Worksheet::insertMarkdownEntry(WorksheetEntry* current)
 {
-    return insertEntry(TextEntry::Type, current);
+    return insertEntry(MarkdownEntry::Type, current);
 }
 
 WorksheetEntry* Worksheet::insertCommandEntry(WorksheetEntry* current)
@@ -1158,6 +1158,7 @@ void Worksheet::populateMenu(QMenu *menu, QPointF pos)
 
         insert->addAction(i18n("Command Entry"), entry, SLOT(insertCommandEntry()));
         insert->addAction(i18n("Text Entry"), entry, SLOT(insertTextEntry()));
+        insert->addAction(i18n("Markdown Entry"), entry, SLOT(insertMarkdownEntry()));
         insert->addAction(i18n("LaTeX Entry"), entry, SLOT(insertLatexEntry()));
         insert->addAction(i18n("Image"), entry, SLOT(insertImageEntry()));
         insert->addAction(i18n("Page Break"), entry, SLOT(insertPageBreakEntry()));
@@ -1175,6 +1176,7 @@ void Worksheet::populateMenu(QMenu *menu, QPointF pos)
     } else {
         menu->addAction(i18n("Insert Command Entry"), this, SLOT(appendCommandEntry()));
         menu->addAction(i18n("Insert Text Entry"), this, SLOT(appendTextEntry()));
+        menu->addAction(i18n("Markdown Entry"), entry, SLOT(appendMarkdownEntry()));
         menu->addAction(i18n("Insert LaTeX Entry"), this, SLOT(appendLatexEntry()));
         menu->addAction(i18n("Insert Image"), this, SLOT(appendImageEntry()));
         menu->addAction(i18n("Insert Page Break"), this, SLOT(appendPageBreakEntry()));

@@ -33,6 +33,7 @@
 #include "worksheetview.h"
 #include "epsrenderer.h"
 #include "worksheetcursor.h"
+#include "markdownentry.h"
 
 namespace Cantor {
     class Backend;
@@ -115,6 +116,7 @@ class Worksheet : public QGraphicsScene
     WorksheetEntry* appendCommandEntry();
     void appendCommandEntry(const QString& text);
     WorksheetEntry* appendTextEntry();
+    WorksheetEntry* appendMarkdownEntry();
     WorksheetEntry* appendImageEntry();
     WorksheetEntry* appendPageBreakEntry();
     WorksheetEntry* appendLatexEntry();
@@ -127,6 +129,7 @@ class Worksheet : public QGraphicsScene
     WorksheetEntry* insertLatexEntry(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertCommandEntryBefore(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertTextEntryBefore(WorksheetEntry* current = nullptr);
+    WorksheetEntry* insertMarkdownEntryBefore(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertImageEntryBefore(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertPageBreakEntryBefore(WorksheetEntry* current = nullptr);
     WorksheetEntry* insertLatexEntryBefore(WorksheetEntry* current = nullptr);

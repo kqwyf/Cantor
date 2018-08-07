@@ -78,13 +78,13 @@ class TextEntry : public WorksheetEntry
 
   protected:
     bool wantToEvaluate() Q_DECL_OVERRIDE;
+    QTextCursor findLatexCode(QTextCursor cursor = QTextCursor()) const;
+    QString showLatexCode(QTextCursor cursor);
 
   protected:
     WorksheetTextItem* m_textItem;
 
   private:
-    QTextCursor findLatexCode(QTextCursor cursor = QTextCursor()) const;
-    QString showLatexCode(QTextCursor cursor);
 
 };
 
