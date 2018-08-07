@@ -19,7 +19,7 @@
     Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
  */
 
-#include "textentry.h"
+#include "markdownentry.h"
 #include "worksheettextitem.h"
 
 #include <QDebug>
