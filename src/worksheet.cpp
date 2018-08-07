@@ -37,6 +37,7 @@
 #include "settings.h"
 #include "commandentry.h"
 #include "textentry.h"
+#include "markdownentry.h"
 #include "latexentry.h"
 #include "imageentry.h"
 #include "pagebreakentry.h"
@@ -525,6 +526,10 @@ WorksheetEntry* Worksheet::appendTextEntry()
    return appendEntry(TextEntry::Type);
 }
 
+WorksheetEntry* Worksheet::appendMarkdownEntry()
+{
+   return appendEntry(MarkdownEntry::Type);
+}
 
 WorksheetEntry* Worksheet::appendPageBreakEntry()
 {
@@ -595,7 +600,7 @@ WorksheetEntry* Worksheet::insertTextEntry(WorksheetEntry* current)
 
 WorksheetEntry* Worksheet::insertMarkdownEntry(WorksheetEntry* current)
 {
-    return insertEntry(TextEntry::Type, current);
+    return insertEntry(MarkdownEntry::Type, current);
 }
 
 WorksheetEntry* Worksheet::insertCommandEntry(WorksheetEntry* current)
@@ -659,6 +664,11 @@ WorksheetEntry* Worksheet::insertEntryBefore(int type, WorksheetEntry* current)
 WorksheetEntry* Worksheet::insertTextEntryBefore(WorksheetEntry* current)
 {
     return insertEntryBefore(TextEntry::Type, current);
+}
+
+WorksheetEntry* Worksheet::insertMarkdownEntryBefore(WorksheetEntry* current)
+{
+    return insertEntryBefore(MarkdownEntry::Type, current);
 }
 
 WorksheetEntry* Worksheet::insertCommandEntryBefore(WorksheetEntry* current)

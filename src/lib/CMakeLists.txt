@@ -20,6 +20,8 @@ set( cantor_LIB_SRCS
   panelpluginhandler.cpp
   worksheetaccess.cpp
   directives/plotdirectives.cpp
+  markdown.cpp
+  markdown-tokens.cpp
 )
 
 Set( cantor_LIB_HDRS
@@ -44,6 +46,8 @@ Set( cantor_LIB_HDRS
   defaulthighlighter.h
   defaultvariablemodel.h
   worksheetaccess.h
+  markdown.h
+  markdown-tokens.h
 )
 
 ki18n_wrap_ui(cantor_LIB_SRCS directives/axisrange.ui directives/plottitle.ui)
