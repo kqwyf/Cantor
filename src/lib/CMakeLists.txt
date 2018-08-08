@@ -45,9 +45,9 @@ Set( cantor_LIB_HDRS
   #helper classes
   defaulthighlighter.h
   defaultvariablemodel.h
-  worksheetaccess.h
   markdown.h
   markdown-tokens.h
+  worksheetaccess.h
 )
 
 ki18n_wrap_ui(cantor_LIB_SRCS directives/axisrange.ui directives/plottitle.ui)
@@ -76,6 +76,7 @@ target_link_libraries( cantorlibs
   KF5::XmlGui
   ${QT5_LIBRARIES}
   Qt5::Xml
+  boost_regex
 )
 
 set_target_properties( cantorlibs
