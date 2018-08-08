@@ -37,7 +37,7 @@
 #include <QDebug>
 #include <KLocalizedString>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : WorksheetEntry(worksheet), m_textItem(new WorksheetTextItem(this, Qt::TextEditorInteraction))
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), m_textItem(new WorksheetTextItem(this, Qt::TextEditorInteraction))
 {
     m_textItem->enableRichText(true);
     connect(m_textItem, &WorksheetTextItem::moveToPrevious, this, &MarkdownEntry::moveToPreviousEntry);

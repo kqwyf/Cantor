@@ -31,10 +31,10 @@
 #include <KArchive>
 
 
-#include "worksheetentry.h"
+#include "textentry.h"
 #include "worksheettextitem.h"
 
-class MarkdownEntry : public WorksheetEntry
+class MarkdownEntry : public TextEntry
 {
   Q_OBJECT
   public:
