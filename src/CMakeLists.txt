@@ -80,6 +80,8 @@ set(cantor_PART_SRCS
    loadedexpression.cpp
    animation.cpp
    epsrenderer.cpp
+   lib/markdown.cpp
+   lib/markdown-tokens.cpp
  )
 
 ki18n_wrap_ui(cantor_PART_SRCS imagesettings.ui)
