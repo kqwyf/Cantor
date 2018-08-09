@@ -15,8 +15,7 @@
     Boston, MA  02110-1301, USA.
 
     ---
-    Copyright (C) 2009 Alexander Rieder <alexanderrieder@gmail.com>
-    Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
+	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
 #ifndef MARKDOWNENTRY_H
@@ -24,6 +23,8 @@
 
 #include "textentry.h"
 #include "worksheettextitem.h"
+
+#include <QFocusEvent>
 
 class MarkdownEntry : public TextEntry
 {
@@ -36,6 +37,15 @@ class MarkdownEntry : public TextEntry
 
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
+
+  protected:
+	bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
+
+  protected:
+	QString plain;
+	QString html;
+	bool dirty;
+	bool evalJustNow;
 };
 
 #endif //MARKDOWNENTRY_H

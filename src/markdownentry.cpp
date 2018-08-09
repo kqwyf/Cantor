@@ -15,8 +15,7 @@
     Boston, MA  02110-1301, USA.
 
     ---
-    Copyright (C) 2009 Alexander Rieder <alexanderrieder@gmail.com>
-    Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
+	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
 #include "lib/markdown.h"
@@ -26,8 +25,9 @@
 
 #include <QDebug>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet)
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(true)
 {
+	m_textItem->installEventFilter(this);
 }
 
 MarkdownEntry::~MarkdownEntry()
@@ -36,12 +36,54 @@ MarkdownEntry::~MarkdownEntry()
 
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
-    std::istringstream markdownTextStream(m_textItem->toPlainText().toStdString());
+	if(m_textItem->hasFocus()) // text in the entry may be edited
+		plain = m_textItem->toPlainText();
+
+	QString t_markdown(plain);
+	t_markdown.replace(QLatin1String("\n"), QLatin1String("\n\n")); // a blank line results in a <p> in html
+
+	// convert markdown to html
     markdown::Document document;
-    document.read(markdownTextStream);
+    document.read(t_markdown.toStdString());
     std::ostringstream htmlStream;
     document.write(htmlStream);
-	QString html = QString::fromStdString(htmlStream.str());
+	html = QString::fromStdString(htmlStream.str());
+
 	m_textItem->setHtml(html);
+	dirty = false;
+	evalJustNow = true;
 	return TextEntry::evaluate(evalOp);
+}
+
+bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
+{
+	if(object == m_textItem)
+	{
+		if(event->type() == QEvent::FocusIn)
+		{
+			QString plainHtml = QLatin1String("<p>") + plain + QLatin1String("</p>"); // clear the style, such as font
+			plainHtml.replace(QLatin1String("\n"), QLatin1String("<br>"));
+			m_textItem->setHtml(plainHtml); 
+		}
+		else if(event->type() == QEvent::FocusOut)
+		{
+			if(evalJustNow)
+			{
+				evalJustNow = false;
+				return false;
+			}
+
+			if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
+			{
+				m_textItem->setHtml(html);
+				TextEntry::evaluate(WorksheetEntry::FocusNext);
+			}
+			else
+			{
+				dirty = true;
+				plain = m_textItem->toPlainText();
+			}
+		}
+	}
+	return false;
 }
