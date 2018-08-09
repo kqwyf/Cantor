@@ -35,6 +35,11 @@ class MarkdownEntry : public TextEntry
 
     enum {Type = UserType + 6};
 
+    void setContent(const QString& content) Q_DECL_OVERRIDE;
+	void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
+
+	QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
+
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
 
