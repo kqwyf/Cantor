@@ -31,7 +31,6 @@
 class TextEntry;
 class MarkdownEntry;
 class CommandEntry;
-class MarkdownEntry;
 class ImageEntry;
 class PageBreakEntry;
 class LaTeXEntry;

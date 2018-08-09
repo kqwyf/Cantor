@@ -33,7 +33,6 @@
 #include "worksheetview.h"
 #include "epsrenderer.h"
 #include "worksheetcursor.h"
-#include "markdownentry.h"
 
 namespace Cantor {
     class Backend;

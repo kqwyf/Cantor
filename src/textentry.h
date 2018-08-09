@@ -84,8 +84,6 @@ class TextEntry : public WorksheetEntry
   protected:
     WorksheetTextItem* m_textItem;
 
-  private:
-
 };
 
 #endif //TEXTENTRY_H
