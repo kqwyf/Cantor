@@ -119,6 +119,7 @@ class WorksheetEntry : public QGraphicsObject
     void insertPageBreakEntry();
     void insertCommandEntryBefore();
     void insertTextEntryBefore();
+    void insertMarkdownEntryBefore();
     void insertLatexEntryBefore();
     void insertImageEntryBefore();
     void insertPageBreakEntryBefore();

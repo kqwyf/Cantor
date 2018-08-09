@@ -144,6 +144,11 @@ void WorksheetEntry::insertTextEntryBefore()
     worksheet()->insertTextEntryBefore(this);
 }
 
+void WorksheetEntry::insertMarkdownEntryBefore()
+{
+    worksheet()->insertMarkdownEntryBefore(this);
+}
+
 void WorksheetEntry::insertLatexEntryBefore()
 {
     worksheet()->insertLatexEntryBefore(this);
