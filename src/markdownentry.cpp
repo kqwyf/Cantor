@@ -15,44 +15,103 @@
     Boston, MA  02110-1301, USA.
 
     ---
-    Copyright (C) 2009 Alexander Rieder <alexanderrieder@gmail.com>
-    Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
+	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
-#include "markdownentry.h"
-#include "worksheettextitem.h"
-
-#include <QDebug>
-#include <KLocalizedString>
-
-#include <iostream>
+#include "lib/markdown.h"
 #include <sstream>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : WorksheetEntry(worksheet), m_textItem(new WorksheetTextItem(this, Qt::TextEditorInteraction))
+#include "markdownentry.h"
+
+#include <QDebug>
+
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(false)
 {
-    m_textItem->enableRichText(true);
-    connect(m_textItem, &WorksheetTextItem::moveToPrevious, this, &MarkdownEntry::moveToPreviousEntry);
-    connect(m_textItem, &WorksheetTextItem::moveToNext, this, &MarkdownEntry::moveToNextEntry);
-    connect(m_textItem, SIGNAL(execute()), this, SLOT(evaluate()));
-    connect(m_textItem, &WorksheetTextItem::doubleClick, this, &MarkdownEntry::resolveImagesAtCursor);
+	m_textItem->installEventFilter(this);
 }
 
 MarkdownEntry::~MarkdownEntry()
 {
 }
 
+void MarkdownEntry::setContent(const QString& content)
+{
+	dirty = true;
+	plain = content;
+	TextEntry::setContent(content);
+}
+
+void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
+{
+    Q_UNUSED(file);
+
+	dirty = true;
+    plain = content.text();
+    m_textItem->setPlainText(plain);
+    qDebug() << plain;
+}
+
+QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
+{
+    Q_UNUSED(archive);
+
+    qDebug() << plain;
+    QDomElement el = doc.createElement(QLatin1String("Markdown"));
+	QDomText text=doc.createTextNode(plain);
+    el.appendChild(text);
+    return el;
+}
+
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
-    std::string cstr = string((const char*)((d->data).toLocal8Bit()));
-    std::stringbuf buf;
-    buf.str(cstr);
-    std::istream in(&buf);
-    markdown::Document doc;
-    doc.read(in);
-    std::ostream out;
-    doc.write(out);
-    std::string ans = out.str();
-    QString html=QString::fromLocal8Bit(ans.c_str());
+	if(m_textItem->hasFocus()) // text in the entry may be edited
+		plain = m_textItem->toPlainText();
+
+	QString t_markdown(plain);
+	t_markdown.replace(QLatin1String("\n"), QLatin1String("\n\n")); // a blank line results in a <p> in html
+
+	// convert markdown to html
+    markdown::Document document;
+    document.read(t_markdown.toStdString());
+    std::ostringstream htmlStream;
+    document.write(htmlStream);
+	html = QString::fromStdString(htmlStream.str());
+
 	m_textItem->setHtml(html);
+	dirty = false;
+	evalJustNow = true;
 	return TextEntry::evaluate(evalOp);
+}
+
+bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
+{
+	if(object == m_textItem)
+	{
+		if(event->type() == QEvent::FocusIn)
+		{
+			QString plainHtml = QLatin1String("<p>") + plain + QLatin1String("</p>"); // clear the style, such as font
+			plainHtml.replace(QLatin1String("\n"), QLatin1String("<br>"));
+			m_textItem->setHtml(plainHtml); 
+		}
+		else if(event->type() == QEvent::FocusOut)
+		{
+			if(evalJustNow)
+			{
+				evalJustNow = false;
+				return false;
+			}
+
+			if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
+			{
+				m_textItem->setHtml(html);
+				TextEntry::evaluate();
+			}
+			else
+			{
+				dirty = true;
+				plain = m_textItem->toPlainText();
+			}
+		}
+	}
+	return false;
 }

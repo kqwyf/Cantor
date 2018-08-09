@@ -15,24 +15,16 @@
     Boston, MA  02110-1301, USA.
 
     ---
-    Copyright (C) 2009 Alexander Rieder <alexanderrieder@gmail.com>
-    Copyright (C) 2012 Martin Kuettler <martin.kuettler@gmail.com>
+	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
 #ifndef MARKDOWNENTRY_H
 #define MARKDOWNENTRY_H
 
-#include <QString>
-#include <QDomElement>
-#include <QDomDocument>
-#include <QIODevice>
-#include <KZip>
-#include <QTextCursor>
-#include <KArchive>
-
-
-#include "worksheettextitem.h"
 #include "textentry.h"
+#include "worksheettextitem.h"
+
+#include <QFocusEvent>
 
 class MarkdownEntry : public TextEntry
 {
@@ -41,10 +33,24 @@ class MarkdownEntry : public TextEntry
     MarkdownEntry(Worksheet* worksheet);
     ~MarkdownEntry() override;
 
-    enum {Type = UserType + 2};
+    enum {Type = UserType + 6};
+
+    void setContent(const QString& content) Q_DECL_OVERRIDE;
+	void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
+
+	QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
 
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
+
+  protected:
+	bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
+
+  protected:
+	QString plain;
+	QString html;
+	bool dirty;
+	bool evalJustNow;
 };
 
 #endif //MARKDOWNENTRY_H

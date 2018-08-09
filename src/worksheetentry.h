@@ -29,6 +29,7 @@
 #include "worksheetcursor.h"
 
 class TextEntry;
+class MarkdownEntry;
 class CommandEntry;
 class MarkdownEntry;
 class ImageEntry;
@@ -113,11 +114,13 @@ class WorksheetEntry : public QGraphicsObject
 
     void insertCommandEntry();
     void insertTextEntry();
+    void insertMarkdownEntry();
     void insertLatexEntry();
     void insertImageEntry();
     void insertPageBreakEntry();
     void insertCommandEntryBefore();
     void insertTextEntryBefore();
+    void insertMarkdownEntryBefore();
     void insertLatexEntryBefore();
     void insertImageEntryBefore();
     void insertPageBreakEntryBefore();
