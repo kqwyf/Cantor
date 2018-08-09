@@ -22,7 +22,6 @@
 #include "textresultitem.h"
 #include "lib/result.h"
 #include "lib/textresult.h"
-#include "lib/markdownresult.h"
 #include "lib/latexresult.h"
 
 #include <QTextCursor>
@@ -79,7 +78,6 @@ ResultItem* TextResultItem::updateFromResult(Cantor::Result* result)
 {
     switch(result->type()) {
     case Cantor::TextResult::Type:
-	case Cantor::MarkdownResult::Type:
         {
             QTextCursor cursor = textCursor();
             cursor.movePosition(QTextCursor::Start);

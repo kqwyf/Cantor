@@ -26,7 +26,6 @@
 
 #include "lib/result.h"
 #include "lib/textresult.h"
-#include "lib/markdownresult.h"
 #include "lib/latexresult.h"
 #include "lib/imageresult.h"
 #include "lib/epsresult.h"
@@ -51,7 +50,6 @@ ResultItem* ResultItem::create(WorksheetEntry* parent, Cantor::Result* result)
     switch(result->type()) {
     case Cantor::TextResult::Type:
     case Cantor::LatexResult::Type:
-	case Cantor::MarkdownResult::Type:
         {
             TextResultItem* item = new TextResultItem(parent);
             item->updateFromResult(result);
