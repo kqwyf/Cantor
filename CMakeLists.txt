@@ -47,6 +47,9 @@ if(NOT WIN32)
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED Pty)
 endif()
 
+# Compile the third party libraries first with the default compilation parameters
+add_subdirectory(src/lib/3rdparty)
+
 include(FeatureSummary)
 include(ECMInstallIcons)
 include(ECMSetupVersion)

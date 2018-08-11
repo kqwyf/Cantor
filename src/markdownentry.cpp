@@ -18,7 +18,7 @@
 	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
-#include "lib/markdown.h"
+#include "lib/3rdparty/markdown.h"
 #include <sstream>
 
 #include "markdownentry.h"
