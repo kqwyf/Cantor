@@ -82,6 +82,7 @@ bool MarkdownEntry::evaluate(EvaluationOption evalOp)
     char *htmlDocument;
     int htmlSize = mkd_document(mdHandle, &htmlDocument);
     html = QString::fromUtf8(htmlDocument, htmlSize);
+    mkd_cleanup(mdHandle);
 
     m_textItem->setHtml(html);
     dirty = false;
