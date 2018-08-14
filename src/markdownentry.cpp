@@ -28,8 +28,6 @@ extern "C" {
 }
 #endif
 
-#include <QDebug>
-
 MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(false)
 {
     m_textItem->installEventFilter(this);
@@ -53,14 +51,12 @@ void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
     dirty = true;
     plain = content.text();
     m_textItem->setPlainText(plain);
-    qDebug() << plain;
 }
 
 QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 {
     Q_UNUSED(archive);
 
-    qDebug() << plain;
     QDomElement el = doc.createElement(QLatin1String("Markdown"));
     QDomText text=doc.createTextNode(plain);
     el.appendChild(text);
