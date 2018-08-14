@@ -28,6 +28,8 @@ extern "C" {
 }
 #endif
 
+#include <QDebug>
+
 MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(false)
 {
     m_textItem->installEventFilter(this);
