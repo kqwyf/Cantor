@@ -113,7 +113,7 @@ bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
 			if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
 			{
 				m_textItem->setHtml(html);
-				TextEntry::evaluate();
+				TextEntry::evaluate(EvaluationOption::DoNothing);
 			}
 			else
 			{
