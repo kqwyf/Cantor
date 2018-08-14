@@ -71,6 +71,10 @@ else(NOT WIN32)
 endif(NOT WIN32)
 
 find_package(Discount)
+set_package_properties(Discount PROPERTIES DESCRIPTION "A C implementation of the Markdown markup language"
+    URL "https://www.pell.portland.or.us/~orc/Code/discount/"
+    TYPE OPTIONAL
+    PURPOSE "Used for Markdown entries in Cantor")
 
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 if (CMAKE_BUILD_TYPE STREQUAL "RELEASE")

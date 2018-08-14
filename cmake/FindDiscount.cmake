@@ -1,10 +1,10 @@
 # - Find Discount
-# Find the discount markdown library.
+# Find the Discount markdown library.
 #
 # This module defines
-#  discount_FOUND - whether the discount library was found
-#  discount_LIBRARIES - the discount library
-#  discount_INCLUDE_DIR - the include path of the discount library
+#  Discount_FOUND - whether the Discount library was found
+#  Discount_LIBRARIES - the Discount library
+#  Discount_INCLUDE_DIR - the include path of the Discount library
 
 # Copyright (c) 2017, Julian Wolff, <wolff@julianwolff.de>
 # Copyright (c) 2018, Sune Vuorela, <sune@kde.org>
@@ -13,29 +13,29 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 
-if (discount_INCLUDE_DIR AND discount_LIBRARIES)
+if (Discount_INCLUDE_DIR AND Discount_LIBRARIES)
 
   # Already in cache
-  set (discount_FOUND TRUE)
+  set (Discount_FOUND TRUE)
 
-else (discount_INCLUDE_DIR AND discount_LIBRARIES)
+else (Discount_INCLUDE_DIR AND Discount_LIBRARIES)
 
-  find_library (discount_LIBRARIES
+  find_library (Discount_LIBRARIES
     NAMES markdown libmarkdown
   )
 
-  find_path (discount_INCLUDE_DIR
+  find_path (Discount_INCLUDE_DIR
     NAMES mkdio.h
   )
 
   include (FindPackageHandleStandardArgs)
-  find_package_handle_standard_args (discount DEFAULT_MSG discount_LIBRARIES discount_INCLUDE_DIR)
+  find_package_handle_standard_args (Discount DEFAULT_MSG Discount_LIBRARIES Discount_INCLUDE_DIR)
 
-endif (discount_INCLUDE_DIR AND discount_LIBRARIES)
+endif (Discount_INCLUDE_DIR AND Discount_LIBRARIES)
 
-mark_as_advanced(discount_INCLUDE_DIR discount_LIBRARIES)
+mark_as_advanced(Discount_INCLUDE_DIR Discount_LIBRARIES)
 
-if (discount_FOUND)
-   add_library(discount::Lib UNKNOWN IMPORTED)
-   set_target_properties(discount::Lib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${discount_INCLUDE_DIR} IMPORTED_LOCATION ${discount_LIBRARIES})
+if (Discount_FOUND)
+   add_library(Discount::Lib UNKNOWN IMPORTED)
+   set_target_properties(Discount::Lib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${Discount_INCLUDE_DIR} IMPORTED_LOCATION ${Discount_LIBRARIES})
 endif()
