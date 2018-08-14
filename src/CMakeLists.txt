@@ -105,7 +105,7 @@ if(LIBSPECTRE_FOUND)
     target_link_libraries(cantorpart ${LIBSPECTRE_LIBRARY})
 endif(LIBSPECTRE_FOUND)
 if(Discount_FOUND)
-    target_link_libraries(cantorpart ${Discount_LIBRARIES})
+    target_link_libraries(cantorpart Discount::Lib)
 endif(Discount_FOUND)
 
 install( FILES cantor_part.rc  DESTINATION  ${KDE_INSTALL_KXMLGUI5DIR}/cantor )
