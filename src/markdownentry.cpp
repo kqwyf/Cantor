@@ -22,7 +22,7 @@
 
 #include "config-cantor.h"
 
-#ifdef discount_FOUND
+#ifdef Discount_FOUND
 extern "C" {
 #include <mkdio.h>
 }
@@ -69,7 +69,7 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
-#ifdef discount_FOUND
+#ifdef Discount_FOUND
 	if(m_textItem->hasFocus()) // text in the entry may be edited
 		plain = m_textItem->toPlainText();
 
