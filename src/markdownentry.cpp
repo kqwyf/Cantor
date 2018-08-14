@@ -15,7 +15,7 @@
     Boston, MA  02110-1301, USA.
 
     ---
-	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
+    Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
 #include "markdownentry.h"
@@ -32,7 +32,7 @@ extern "C" {
 
 MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(false)
 {
-	m_textItem->installEventFilter(this);
+    m_textItem->installEventFilter(this);
 }
 
 MarkdownEntry::~MarkdownEntry()
@@ -41,16 +41,16 @@ MarkdownEntry::~MarkdownEntry()
 
 void MarkdownEntry::setContent(const QString& content)
 {
-	dirty = true;
-	plain = content;
-	TextEntry::setContent(content);
+    dirty = true;
+    plain = content;
+    TextEntry::setContent(content);
 }
 
 void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
 {
     Q_UNUSED(file);
 
-	dirty = true;
+    dirty = true;
     plain = content.text();
     m_textItem->setPlainText(plain);
     qDebug() << plain;
@@ -62,7 +62,7 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 
     qDebug() << plain;
     QDomElement el = doc.createElement(QLatin1String("Markdown"));
-	QDomText text=doc.createTextNode(plain);
+    QDomText text=doc.createTextNode(plain);
     el.appendChild(text);
     return el;
 }
@@ -70,10 +70,10 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
 #ifdef Discount_FOUND
-	if(m_textItem->hasFocus()) // text in the entry may be edited
-		plain = m_textItem->toPlainText();
+    if(m_textItem->hasFocus()) // text in the entry may be edited
+        plain = m_textItem->toPlainText();
 
-	// convert markdown to html
+    // convert markdown to html
     QByteArray mdCharArray = plain.toUtf8();
     MMIOT* mdHandle = mkd_string(mdCharArray.data(), mdCharArray.size()+1, 0); // get the size of the string in byte
     if(!mkd_compile(mdHandle, MKD_NOSUPERSCRIPT | MKD_FENCEDCODE | MKD_GITHUBTAGS))
@@ -85,42 +85,42 @@ bool MarkdownEntry::evaluate(EvaluationOption evalOp)
     int htmlSize = mkd_document(mdHandle, &htmlDocument);
     html = QString::fromUtf8(htmlDocument, htmlSize);
 
-	m_textItem->setHtml(html);
-	dirty = false;
-	evalJustNow = true;
+    m_textItem->setHtml(html);
+    dirty = false;
+    evalJustNow = true;
 #endif
-	return TextEntry::evaluate(evalOp);
+    return TextEntry::evaluate(evalOp);
 }
 
 bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
 {
-	if(object == m_textItem)
-	{
-		if(event->type() == QEvent::FocusIn)
-		{
-			QString plainHtml = QLatin1String("<p>") + plain + QLatin1String("</p>"); // clear the style, such as font
-			plainHtml.replace(QLatin1String("\n"), QLatin1String("<br>"));
-			m_textItem->setHtml(plainHtml); 
-		}
-		else if(event->type() == QEvent::FocusOut)
-		{
-			if(evalJustNow)
-			{
-				evalJustNow = false;
-				return false;
-			}
+    if(object == m_textItem)
+    {
+        if(event->type() == QEvent::FocusIn)
+        {
+            QString plainHtml = QLatin1String("<p>") + plain + QLatin1String("</p>"); // clear the style, such as font
+            plainHtml.replace(QLatin1String("\n"), QLatin1String("<br>"));
+            m_textItem->setHtml(plainHtml); 
+        }
+        else if(event->type() == QEvent::FocusOut)
+        {
+            if(evalJustNow)
+            {
+                evalJustNow = false;
+                return false;
+            }
 
-			if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
-			{
-				m_textItem->setHtml(html);
-				TextEntry::evaluate(EvaluationOption::DoNothing);
-			}
-			else
-			{
-				dirty = true;
-				plain = m_textItem->toPlainText();
-			}
-		}
-	}
-	return false;
+            if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
+            {
+                m_textItem->setHtml(html);
+                TextEntry::evaluate(EvaluationOption::DoNothing);
+            }
+            else
+            {
+                dirty = true;
+                plain = m_textItem->toPlainText();
+            }
+        }
+    }
+    return false;
 }

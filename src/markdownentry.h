@@ -15,7 +15,7 @@
     Boston, MA  02110-1301, USA.
 
     ---
-	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
+    Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
 #ifndef MARKDOWNENTRY_H
@@ -36,21 +36,21 @@ class MarkdownEntry : public TextEntry
     enum {Type = UserType + 6};
 
     void setContent(const QString& content) Q_DECL_OVERRIDE;
-	void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
+    void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
 
-	QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
+    QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
 
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
 
   protected:
-	bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
 
   protected:
-	QString plain;
-	QString html;
-	bool dirty;
-	bool evalJustNow;
+    QString plain;
+    QString html;
+    bool dirty;
+    bool evalJustNow;
 };
 
 #endif //MARKDOWNENTRY_H
