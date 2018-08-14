@@ -15,9 +15,6 @@ set(KF5_MIN_VERSION "5.15.0")
 find_package(ECM 5.15.0 REQUIRED CONFIG)
 set(CMAKE_MODULE_PATH ${cantor_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
-find_package(Boost REQUIRED COMPONENTS
-    regex)
-
 find_package(Qt5 5.6.0 CONFIG REQUIRED
     Core
     Widgets
@@ -47,9 +44,6 @@ if(NOT WIN32)
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED Pty)
 endif()
 
-# Compile the third party libraries first with the default compilation parameters
-add_subdirectory(src/lib/3rdparty)
-
 include(FeatureSummary)
 include(ECMInstallIcons)
 include(ECMSetupVersion)
@@ -75,6 +69,8 @@ if(NOT WIN32)
 else(NOT WIN32)
     set(WITH_EPS Off)
 endif(NOT WIN32)
+
+find_package(Discount)
 
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 if (CMAKE_BUILD_TYPE STREQUAL "RELEASE")

@@ -18,10 +18,15 @@
 	Copyright (C) 2018 Yifei Wu <kqwyfg@gmail.com>
  */
 
-#include "lib/3rdparty/markdown.h"
-#include <sstream>
-
 #include "markdownentry.h"
+
+#include "config-cantor.h"
+
+#ifdef discount_FOUND
+extern "C" {
+#include <mkdio.h>
+}
+#endif
 
 #include <QDebug>
 
@@ -64,22 +69,38 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
+#ifdef discount_FOUND
 	if(m_textItem->hasFocus()) // text in the entry may be edited
 		plain = m_textItem->toPlainText();
 
-	QString t_markdown(plain);
-	t_markdown.replace(QLatin1String("\n"), QLatin1String("\n\n")); // a blank line results in a <p> in html
+    /*
+    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    QTemporaryFile* markdownQFile = new QTemporaryFile(tempDir + QLatin1String("/cantor_md-XXXXXX.md"));
+    markdownQFile->open(QIODevice::ReadOnly);
+    FILE* mdFile = fdopen(markdownQFile->handle(), "rb");
+    if(!mdFile)
+    {
+        qDebug()<<"Failed to open the markdown temporary file";
+        return TextEntry::evaluate(evalOp);
+    }
+    */
 
 	// convert markdown to html
-    markdown::Document document;
-    document.read(t_markdown.toStdString());
-    std::ostringstream htmlStream;
-    document.write(htmlStream);
-	html = QString::fromStdString(htmlStream.str());
+    QByteArray mdCharArray = plain.toUtf8();
+    MMIOT* mdHandle = mkd_string(mdCharArray.data(), mdCharArray.size()+1, 0); // get the size of the string in byte
+    if(!mkd_compile(mdHandle, MKD_NOSUPERSCRIPT | MKD_FENCEDCODE | MKD_GITHUBTAGS))
+    {
+        qDebug()<<"Failed to compile the markdown document";
+        return TextEntry::evaluate(evalOp);
+    }
+    char *htmlDocument;
+    int htmlSize = mkd_document(mdHandle, &htmlDocument);
+    html = QString::fromUtf8(htmlDocument, htmlSize);
 
 	m_textItem->setHtml(html);
 	dirty = false;
 	evalJustNow = true;
+#endif
 	return TextEntry::evaluate(evalOp);
 }
 
