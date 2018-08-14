@@ -73,18 +73,6 @@ bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 	if(m_textItem->hasFocus()) // text in the entry may be edited
 		plain = m_textItem->toPlainText();
 
-    /*
-    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QTemporaryFile* markdownQFile = new QTemporaryFile(tempDir + QLatin1String("/cantor_md-XXXXXX.md"));
-    markdownQFile->open(QIODevice::ReadOnly);
-    FILE* mdFile = fdopen(markdownQFile->handle(), "rb");
-    if(!mdFile)
-    {
-        qDebug()<<"Failed to open the markdown temporary file";
-        return TextEntry::evaluate(evalOp);
-    }
-    */
-
 	// convert markdown to html
     QByteArray mdCharArray = plain.toUtf8();
     MMIOT* mdHandle = mkd_string(mdCharArray.data(), mdCharArray.size()+1, 0); // get the size of the string in byte
