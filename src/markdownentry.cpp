@@ -30,7 +30,7 @@ extern "C" {
 
 #include <QDebug>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(false), evalJustNow(false)
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), dirty(true), evalJustNow(false)
 {
     m_textItem->installEventFilter(this);
 }
@@ -50,33 +50,71 @@ void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
 {
     Q_UNUSED(file);
 
-    dirty = true;
-    plain = content.text();
-    m_textItem->setPlainText(plain);
+    dirty = content.attribute(QLatin1String("dirty"), QLatin1String("1")) == QLatin1String("1");
+    QDomElement htmlEl = content.firstChildElement(QLatin1String("HTML"));
+    if(!htmlEl.isNull())
+        html = htmlEl.text();
+    else
+    {
+        html = QLatin1String("");
+        dirty = true; // No html provided. Assume that it hasn't been evaluated.
+    }
+    QDomElement plainEl = content.firstChildElement(QLatin1String("Plain"));
+    if(!plainEl.isNull())
+        plain = plainEl.text();
+    else
+    {
+        plain = QLatin1String("");
+        html = QLatin1String(""); // No plain text provided. The entry shouldn't render anything, or the user can't re-edit it.
+    }
+    if(dirty || m_textItem->hasFocus())
+        m_textItem->setPlainText(plain);
+    else
+        m_textItem->setHtml(html);
 }
 
 QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 {
     Q_UNUSED(archive);
 
+    if(m_textItem->hasFocus()) // text in the entry may be edited
+    {
+        plain = m_textItem->toPlainText();
+        dirty = true;
+    }
+
     QDomElement el = doc.createElement(QLatin1String("Markdown"));
-    QDomText text=doc.createTextNode(plain);
-    el.appendChild(text);
+    el.setAttribute(QLatin1String("dirty"), (int)dirty);
+
+    QDomElement plainEl = doc.createElement(QLatin1String("Plain"));
+    plainEl.appendChild(doc.createTextNode(plain));
+    el.appendChild(plainEl);
+    if(!dirty && !html.isEmpty())
+    {
+        QDomElement htmlEl = doc.createElement(QLatin1String("HTML"));
+        htmlEl.appendChild(doc.createTextNode(html));
+        el.appendChild(htmlEl);
+    }
     return el;
 }
 
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
-#ifdef Discount_FOUND
-    if(m_textItem->hasFocus()) // text in the entry may be edited
-        plain = m_textItem->toPlainText();
+    if(m_textItem->hasFocus())
+    {
+        plain = m_textItem->toPlainText(); // text in the entry may be edited
+        evalJustNow = true; // used in FocusOut event
+    }
+    dirty = false;
 
+#ifdef Discount_FOUND
     // convert markdown to html
     QByteArray mdCharArray = plain.toUtf8();
     MMIOT* mdHandle = mkd_string(mdCharArray.data(), mdCharArray.size()+1, 0); // get the size of the string in byte
     if(!mkd_compile(mdHandle, MKD_NOSUPERSCRIPT | MKD_FENCEDCODE | MKD_GITHUBTAGS))
     {
         qDebug()<<"Failed to compile the markdown document";
+        mkd_cleanup(mdHandle);
         return TextEntry::evaluate(evalOp);
     }
     char *htmlDocument;
@@ -85,8 +123,6 @@ bool MarkdownEntry::evaluate(EvaluationOption evalOp)
     mkd_cleanup(mdHandle);
 
     m_textItem->setHtml(html);
-    dirty = false;
-    evalJustNow = true;
 #endif
     return TextEntry::evaluate(evalOp);
 }
@@ -103,16 +139,23 @@ bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
         }
         else if(event->type() == QEvent::FocusOut)
         {
-            if(evalJustNow)
+            if(evalJustNow) // avoid evaluating just after an evaluation
             {
                 evalJustNow = false;
                 return false;
             }
 
-            if(!dirty && plain.compare(m_textItem->toPlainText()) == 0)
+            if(!dirty && plain == m_textItem->toPlainText())
             {
+#ifdef Discount_FOUND
                 m_textItem->setHtml(html);
-                TextEntry::evaluate(EvaluationOption::DoNothing);
+#else
+                if(!html.isEmpty()) // the entry is loaded from Xml
+                    m_textItem->setHtml(html);
+                else
+                    m_textItem->setPlainText(plain);
+#endif
+                TextEntry::evaluate(EvaluationOption::DoNothing); // render the latex code
             }
             else
             {
@@ -122,4 +165,9 @@ bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
         }
     }
     return false;
+}
+
+bool MarkdownEntry::wantToEvaluate()
+{
+    return dirty;
 }

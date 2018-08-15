@@ -45,6 +45,7 @@ class MarkdownEntry : public TextEntry
 
   protected:
     bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
+    bool wantToEvaluate() Q_DECL_OVERRIDE;
 
   protected:
     QString plain;
