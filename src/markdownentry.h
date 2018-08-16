@@ -53,8 +53,6 @@ class MarkdownEntry : public TextEntry
     QString html;
     bool dirty;
     bool evalJustNow;
-    int focusPos;
-    qreal focusXCoord;
 };
 
 #endif //MARKDOWNENTRY_H

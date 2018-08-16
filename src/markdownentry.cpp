@@ -43,9 +43,8 @@ bool MarkdownEntry::focusEntry(int pos, qreal xCoord)
 {
     if(aboutToBeRemoved())
         return false;
-    focusPos = pos;
-    focusXCoord = xCoord;
-    m_textItem->setFocusAt(pos, xCoord);
+    m_textItem->setFocusAt(pos, xCoord); // the FocusIn event is triggered, the content changes
+    m_textItem->setFocusAt(pos, xCoord); // set the focus at the correct position
     return true;
 }
 
@@ -146,7 +145,6 @@ bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
             QString plainHtml = QLatin1String("<p>") + plain + QLatin1String("</p>"); // clear the style, such as font
             plainHtml.replace(QLatin1String("\n"), QLatin1String("<br>"));
             m_textItem->setHtml(plainHtml); 
-            m_textItem->setFocusAt(focusPos, focusXCoord);
         }
         else if(event->type() == QEvent::FocusOut)
         {
