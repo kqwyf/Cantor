@@ -35,6 +35,7 @@ class MarkdownEntry : public TextEntry
 
     enum {Type = UserType + 6};
 
+    bool focusEntry(int pos = WorksheetTextItem::TopLeft, qreal xCoord=0) Q_DECL_OVERRIDE;
     void setContent(const QString& content) Q_DECL_OVERRIDE;
     void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
 
@@ -52,6 +53,8 @@ class MarkdownEntry : public TextEntry
     QString html;
     bool dirty;
     bool evalJustNow;
+    int focusPos;
+    qreal focusXCoord;
 };
 
 #endif //MARKDOWNENTRY_H
