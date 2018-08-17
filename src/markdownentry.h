@@ -24,8 +24,6 @@
 #include "textentry.h"
 #include "worksheettextitem.h"
 
-#include <QFocusEvent>
-
 class MarkdownEntry : public TextEntry
 {
   Q_OBJECT
@@ -35,7 +33,6 @@ class MarkdownEntry : public TextEntry
 
     enum {Type = UserType + 6};
 
-    bool focusEntry(int pos = WorksheetTextItem::TopLeft, qreal xCoord=0) Q_DECL_OVERRIDE;
     void setContent(const QString& content) Q_DECL_OVERRIDE;
     void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
 
@@ -45,14 +42,20 @@ class MarkdownEntry : public TextEntry
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
 
   protected:
+    bool renderMarkdown(QString& plain);
     bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
     bool wantToEvaluate() Q_DECL_OVERRIDE;
+    bool wantFocus() Q_DECL_OVERRIDE;
+    void setEditable(bool value);
+
+  private:
+    void lockEntry();
 
   protected:
     QString plain;
     QString html;
-    bool dirty;
-    bool evalJustNow;
+    bool mdRendered;
+    bool latexRendered;
 };
 
 #endif //MARKDOWNENTRY_H
