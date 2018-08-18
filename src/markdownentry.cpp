@@ -112,7 +112,7 @@ bool MarkdownEntry::renderMarkdown(QString& plain)
 #ifdef Discount_FOUND
     QByteArray mdCharArray = plain.toUtf8();
     MMIOT* mdHandle = mkd_string(mdCharArray.data(), mdCharArray.size()+1, 0);
-    if(!mkd_compile(mdHandle, MKD_NOSUPERSCRIPT | MKD_FENCEDCODE | MKD_GITHUBTAGS))
+    if(!mkd_compile(mdHandle, MKD_FENCEDCODE | MKD_GITHUBTAGS))
     {
         qDebug()<<"Failed to compile the markdown document";
         mkd_cleanup(mdHandle);
