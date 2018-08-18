@@ -30,7 +30,7 @@ extern "C" {
 
 #include <QDebug>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), mdRendered(false), latexRendered(false)
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), rendered(false)
 {
     m_textItem->installEventFilter(this);
 }
@@ -41,8 +41,7 @@ MarkdownEntry::~MarkdownEntry()
 
 void MarkdownEntry::setContent(const QString& content)
 {
-    mdRendered = false;
-    latexRendered = false;
+    rendered = false;
     plain = content;
     TextEntry::setContent(content);
 }
@@ -51,15 +50,14 @@ void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
 {
     Q_UNUSED(file);
 
-    mdRendered = content.attribute(QLatin1String("mdRendered"), QLatin1String("1")) == QLatin1String("1");
-    latexRendered = false;
+    rendered = content.attribute(QLatin1String("rendered"), QLatin1String("1")) == QLatin1String("1");
     QDomElement htmlEl = content.firstChildElement(QLatin1String("HTML"));
     if(!htmlEl.isNull())
         html = htmlEl.text();
     else
     {
         html = QLatin1String("");
-        mdRendered = false; // No html provided. Assume that it hasn't been rendered.
+        rendered = false; // No html provided. Assume that it hasn't been rendered.
     }
     QDomElement plainEl = content.firstChildElement(QLatin1String("Plain"));
     if(!plainEl.isNull())
@@ -69,11 +67,8 @@ void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
         plain = QLatin1String("");
         html = QLatin1String(""); // No plain text provided. The entry shouldn't render anything, or the user can't re-edit it.
     }
-    if(mdRendered)
-    {
+    if(rendered)
         m_textItem->setHtml(html);
-        setEditable(false);
-    }
     else
         m_textItem->setPlainText(plain);
 }
@@ -82,16 +77,16 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 {
     Q_UNUSED(archive);
 
-    if(m_textItem->isEditable())
+    if(!rendered)
         plain = m_textItem->toPlainText();
 
     QDomElement el = doc.createElement(QLatin1String("Markdown"));
-    el.setAttribute(QLatin1String("mdRendered"), (int)mdRendered);
+    el.setAttribute(QLatin1String("rendered"), (int)rendered);
 
     QDomElement plainEl = doc.createElement(QLatin1String("Plain"));
     plainEl.appendChild(doc.createTextNode(plain));
     el.appendChild(plainEl);
-    if(mdRendered)
+    if(rendered)
     {
         QDomElement htmlEl = doc.createElement(QLatin1String("HTML"));
         htmlEl.appendChild(doc.createTextNode(html));
@@ -102,17 +97,14 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
 
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
-    if(mdRendered && latexRendered)
-        return true;
-    if(m_textItem->isEditable())
+    if(!rendered)
     {
-        setEditable(false);
         plain = m_textItem->toPlainText();
+        rendered = renderMarkdown(plain);
     }
-    mdRendered = renderMarkdown(plain);
-    bool result = TextEntry::evaluate(evalOp);
-    latexRendered = findLatexCode().isNull();
-    return result;
+
+    evaluateNext(evalOp);
+    return true;
 }
 
 bool MarkdownEntry::renderMarkdown(QString& plain)
@@ -134,6 +126,8 @@ bool MarkdownEntry::renderMarkdown(QString& plain)
     m_textItem->setHtml(html);
     return true;
 #else
+    Q_UNUSED(plain);
+
     return false;
 #endif
 }
@@ -146,59 +140,22 @@ bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)
         {
             QGraphicsSceneMouseEvent* mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
             if(!mouseEvent) return false;
-            if(mouseEvent->button() == Qt::LeftButton && !m_textItem->isEditable())
+            if(mouseEvent->button() == Qt::LeftButton && rendered)
             {
                 QTextDocument* doc = m_textItem->document();
                 doc->setPlainText(plain);
                 m_textItem->setDocument(doc);
                 m_textItem->setCursorPosition(mouseEvent->pos());
                 m_textItem->textCursor().clearSelection();
-                setEditable(true);
-                mdRendered = false;
-                latexRendered = false;
+                rendered = false;
                 return true;
             }
-        }/*
-        else if(event->type() == QEvent::KeyPress)
-        {
-            if(!m_textItem->isEditable())
-            {
-                QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
-                if(!keyEvent) return false;
-                switch(keyEvent->key())
-                {
-                    case Qt::Key_Left:
-                    case Qt::Key_Up:
-                        if (keyEvent->modifiers() == Qt::NoModifier)
-                            moveToPreviousEntry(WorksheetTextItem::BottomRight, 0);
-                        break;
-                    case Qt::Key_Right:
-                    case Qt::Key_Down:
-                        if (keyEvent->modifiers() == Qt::NoModifier)
-                            moveToNextEntry(WorksheetTextItem::TopLeft, 0);
-                        break;
-                }
-            }
-        }*/
+        }
     }
     return false;
 }
 
 bool MarkdownEntry::wantToEvaluate()
 {
-    return !mdRendered || TextEntry::wantToEvaluate();
-}
-
-bool MarkdownEntry::wantFocus()
-{
-    return true;
-    //return m_textItem->isEditable();
-}
-
-void MarkdownEntry::setEditable(bool value)
-{
-    if(value)
-        m_textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
-    else
-        m_textItem->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    return !rendered;
 }

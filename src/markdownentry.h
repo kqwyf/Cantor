@@ -45,17 +45,11 @@ class MarkdownEntry : public TextEntry
     bool renderMarkdown(QString& plain);
     bool eventFilter(QObject* object, QEvent* event) Q_DECL_OVERRIDE;
     bool wantToEvaluate() Q_DECL_OVERRIDE;
-    bool wantFocus() Q_DECL_OVERRIDE;
-    void setEditable(bool value);
-
-  private:
-    void lockEntry();
 
   protected:
     QString plain;
     QString html;
-    bool mdRendered;
-    bool latexRendered;
+    bool rendered;
 };
 
 #endif //MARKDOWNENTRY_H
