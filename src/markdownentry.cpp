@@ -30,20 +30,49 @@ extern "C" {
 
 #include <QDebug>
 
-MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : TextEntry(worksheet), rendered(false)
+MarkdownEntry::MarkdownEntry(Worksheet* worksheet) : WorksheetEntry(worksheet), m_textItem(new WorksheetTextItem(this, Qt::TextEditorInteraction)), rendered(false)
 {
+    m_textItem->enableRichText(false);
     m_textItem->installEventFilter(this);
+    connect(m_textItem, &WorksheetTextItem::moveToPrevious, this, &MarkdownEntry::moveToPreviousEntry);
+    connect(m_textItem, &WorksheetTextItem::moveToNext, this, &MarkdownEntry::moveToNextEntry);
+    connect(m_textItem, SIGNAL(execute()), this, SLOT(evaluate()));
 }
 
 MarkdownEntry::~MarkdownEntry()
 {
 }
 
+bool MarkdownEntry::isEmpty()
+{
+    return m_textItem->document()->isEmpty();
+}
+
+int MarkdownEntry::type() const
+{
+    return Type;
+}
+
+bool MarkdownEntry::acceptRichText()
+{
+    return false;
+}
+
+bool MarkdownEntry::focusEntry(int pos, qreal xCoord)
+{
+    if (aboutToBeRemoved())
+        return false;
+    m_textItem->setFocusAt(pos, xCoord);
+    return true;
+}
+
 void MarkdownEntry::setContent(const QString& content)
 {
     rendered = false;
     plain = content;
-    TextEntry::setContent(content);
+    QTextDocument* doc = m_textItem->document();
+    doc->setPlainText(plain);
+    m_textItem->setDocument(doc);
 }
 
 void MarkdownEntry::setContent(const QDomElement& content, const KZip& file)
@@ -95,6 +124,27 @@ QDomElement MarkdownEntry::toXml(QDomDocument& doc, KZip* archive)
     return el;
 }
 
+QString MarkdownEntry::toPlain(const QString& commandSep, const QString& commentStartingSeq, const QString& commentEndingSeq)
+{
+    Q_UNUSED(commandSep);
+
+    if (commentStartingSeq.isEmpty())
+        return QString();
+
+    if(!rendered)
+        plain = m_textItem->toPlainText();
+
+    QString text = QString(plain);
+
+    if (!commentEndingSeq.isEmpty())
+        return commentStartingSeq + text + commentEndingSeq + QLatin1String("\n");
+    return commentStartingSeq + text.replace(QLatin1String("\n"), QLatin1String("\n") + commentStartingSeq) + QLatin1String("\n");
+}
+
+void MarkdownEntry::interruptEvaluation()
+{
+}
+
 bool MarkdownEntry::evaluate(EvaluationOption evalOp)
 {
     if(!rendered)
@@ -130,6 +180,34 @@ bool MarkdownEntry::renderMarkdown(QString& plain)
 
     return false;
 #endif
+}
+
+void MarkdownEntry::updateEntry()
+{
+}
+
+WorksheetCursor MarkdownEntry::search(const QString& pattern, unsigned flags,
+                                  QTextDocument::FindFlags qt_flags,
+                                  const WorksheetCursor& pos)
+{
+    if (!(flags & WorksheetEntry::SearchText) ||
+        (pos.isValid() && pos.entry() != this))
+        return WorksheetCursor();
+
+    QTextCursor textCursor = m_textItem->search(pattern, qt_flags, pos);
+    if (textCursor.isNull())
+        return WorksheetCursor();
+    else
+        return WorksheetCursor(this, m_textItem, textCursor);
+}
+
+void MarkdownEntry::layOutForWidth(qreal w, bool force)
+{
+    if (size().width() == w && !force)
+        return;
+
+    m_textItem->setGeometry(0, 0, w);
+    setSize(QSizeF(m_textItem->width(), m_textItem->height() + VerticalMargin));
 }
 
 bool MarkdownEntry::eventFilter(QObject* object, QEvent* event)

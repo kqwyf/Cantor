@@ -21,10 +21,10 @@
 #ifndef MARKDOWNENTRY_H
 #define MARKDOWNENTRY_H
 
-#include "textentry.h"
+#include "worksheetentry.h"
 #include "worksheettextitem.h"
 
-class MarkdownEntry : public TextEntry
+class MarkdownEntry : public WorksheetEntry
 {
   Q_OBJECT
   public:
@@ -32,14 +32,31 @@ class MarkdownEntry : public TextEntry
     ~MarkdownEntry() override;
 
     enum {Type = UserType + 6};
+    int type() const Q_DECL_OVERRIDE;
+
+    bool isEmpty() Q_DECL_OVERRIDE;
+
+    bool acceptRichText() Q_DECL_OVERRIDE;
+
+    bool focusEntry(int pos = WorksheetTextItem::TopLeft, qreal xCoord=0) Q_DECL_OVERRIDE;
 
     void setContent(const QString& content) Q_DECL_OVERRIDE;
     void setContent(const QDomElement& content, const KZip& file) Q_DECL_OVERRIDE;
 
     QDomElement toXml(QDomDocument& doc, KZip* archive) Q_DECL_OVERRIDE;
+    QString toPlain(const QString& commandSep, const QString& commentStartingSeq, const QString& commentEndingSeq) Q_DECL_OVERRIDE;
+
+    void interruptEvaluation() Q_DECL_OVERRIDE;
+
+    void layOutForWidth(qreal w, bool force = false) Q_DECL_OVERRIDE;
+
+    WorksheetCursor search(const QString& pattern, unsigned flags,
+                           QTextDocument::FindFlags qt_flags,
+                           const WorksheetCursor& pos = WorksheetCursor()) Q_DECL_OVERRIDE;
 
   public Q_SLOTS:
     bool evaluate(WorksheetEntry::EvaluationOption evalOp = FocusNext) Q_DECL_OVERRIDE;
+    void updateEntry() Q_DECL_OVERRIDE;
 
   protected:
     bool renderMarkdown(QString& plain);
@@ -47,6 +64,7 @@ class MarkdownEntry : public TextEntry
     bool wantToEvaluate() Q_DECL_OVERRIDE;
 
   protected:
+    WorksheetTextItem* m_textItem;
     QString plain;
     QString html;
     bool rendered;
