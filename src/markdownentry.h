@@ -31,7 +31,7 @@ class MarkdownEntry : public WorksheetEntry
     MarkdownEntry(Worksheet* worksheet);
     ~MarkdownEntry() override;
 
-    enum {Type = UserType + 6};
+    enum {Type = UserType + 7};
     int type() const Q_DECL_OVERRIDE;
 
     bool isEmpty() Q_DECL_OVERRIDE;
